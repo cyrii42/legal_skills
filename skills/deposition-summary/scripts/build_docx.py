@@ -37,6 +37,55 @@ LEGEND = "Privileged & Confidential - Attorney Work Product"
 
 _INLINE = re.compile(r"(\*\*.+?\*\*|\*[^*]+?\*|`[^`]+?`)")
 
+# Curly-quote characters.
+_LDQUO, _RDQUO, _LSQUO, _RSQUO = "“", "”", "‘", "’"
+# A straight quote is "opening" when it starts the text or follows whitespace or
+# one of these opening delimiters (including an em/en-dash or an opening curly
+# double quote, so a nested single quote is treated as opening).
+_OPEN_AFTER = set(" \t\n\r([{<—–")
+_CODE_SPAN = re.compile(r"(```.*?```|`[^`\n]*`)", re.DOTALL)
+_WIKILINK = re.compile(r"!?\[\[([^\]|]+)(?:\|([^\]]+))?\]\]")
+
+
+def _dewiki(text):
+    """Render Obsidian wikilinks/embeds as plain readable text. A Word document
+    has no concept of them, so [[a/b#c|Display]] -> Display and a bare
+    [[a/b#c]] -> "b" (path and #anchor stripped). Leaves code spans alone."""
+    def repl(m):
+        if m.group(2):
+            return m.group(2)
+        return m.group(1).split("#", 1)[0].rsplit("/", 1)[-1]
+
+    parts = _CODE_SPAN.split(text)
+    for i in range(0, len(parts), 2):
+        parts[i] = _WIKILINK.sub(repl, parts[i])
+    return "".join(parts)
+
+
+def _educate_plain(s):
+    """Turn straight quotes into typographic quotes using SmartyPants-style
+    heuristics. Apostrophes and closing quotes default to the right-hand mark."""
+    out = []
+    for i, ch in enumerate(s):
+        prev = s[i - 1] if i else "\n"
+        if ch == '"':
+            out.append(_LDQUO if prev in _OPEN_AFTER else _RDQUO)
+        elif ch == "'":
+            out.append(_LSQUO if prev in _OPEN_AFTER or prev in '"' + _LDQUO
+                       else _RSQUO)
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def _educate(text):
+    """Educate quotes across the document, leaving inline/fenced code spans
+    (Bates labels, Westlaw asterisk cites, etc.) untouched."""
+    parts = _CODE_SPAN.split(text)
+    for i in range(0, len(parts), 2):  # even indices are outside code spans
+        parts[i] = _educate_plain(parts[i])
+    return "".join(parts)
+
 
 def _style_run(run):
     run.font.name = FONT
@@ -100,6 +149,15 @@ def _setup(doc):
         section.bottom_margin = Inches(1)
         section.left_margin = Inches(1)
         section.right_margin = Inches(1)
+        # Confidentiality legend as a right-justified page header, repeating on
+        # every page (not a body paragraph).
+        section.different_first_page_header_footer = False
+        header_p = section.header.paragraphs[0]
+        header_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        header_p.text = ""
+        hr = header_p.add_run(LEGEND)
+        hr.bold = True
+        _style_run(hr)
         footer_p = section.footer.paragraphs[0]
         footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _add_page_number(footer_p)
@@ -189,6 +247,8 @@ def build(md_path, out_path=None):
 
     text = md_path.read_text(encoding="utf-8")
     text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
+    text = _dewiki(text)  # Obsidian wikilinks -> plain text (meaningless in Word)
+    text = _educate(text)  # straight quotes -> typographic quotes (house style)
     lines = text.splitlines()
 
     # Strip YAML frontmatter.
@@ -200,14 +260,6 @@ def build(md_path, out_path=None):
 
     doc = Document()
     _setup(doc)
-
-    # Legend at the very top.
-    legend_p = doc.add_paragraph()
-    legend_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    legend_p.paragraph_format.space_after = Pt(12)
-    lr = legend_p.add_run(LEGEND)
-    lr.bold = True
-    _style_run(lr)
 
     i = 0
     n = len(lines)
