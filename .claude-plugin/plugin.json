@@ -2,10 +2,10 @@
   "name": "legal-skills",
   "displayName": "Legal Skills",
   "version": "1.0.0",
-  "description": "Firm-shared skills: deposition-summary (deposition transcript summaries) and grill-me (plan/design stress-testing interview).",
+  "description": "Shared Claude skills for plaintiffs-side litigation and legal practice",
   "author": {
-    "name": "Zachary M. Vaughan",
-    "email": "zvaughan@bergermontague.com"
+    "name": "Zach Vaughan",
+    "email": "85461794+cyrii42@users.noreply.github.com"
   },
   "license": "MIT"
 }

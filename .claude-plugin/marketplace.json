@@ -1,14 +1,14 @@
 {
-  "name": "zmv",
+  "name": "cyrii42",
   "owner": {
-    "name": "Zachary M. Vaughan",
-    "email": "zvaughan@bergermontague.com"
+    "name": "Zach Vaughan",
+    "email": "85461794+cyrii42@users.noreply.github.com"
   },
   "plugins": [
     {
       "name": "legal-skills",
       "source": "./",
-      "description": "Firm-shared skills: deposition-summary (deposition transcript summaries) and grill-me (plan/design stress-testing interview)."
+      "description": "Shared Claude skills for plaintiffs-side litigation and legal practice"
     }
   ]
 }
