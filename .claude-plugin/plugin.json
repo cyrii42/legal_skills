@@ -1,0 +1,11 @@
+{
+  "name": "legal-skills",
+  "displayName": "Legal Skills",
+  "version": "1.0.0",
+  "description": "Firm-shared skills: deposition-summary (deposition transcript summaries) and grill-me (plan/design stress-testing interview).",
+  "author": {
+    "name": "Zachary M. Vaughan",
+    "email": "zvaughan@bergermontague.com"
+  },
+  "license": "MIT"
+}
