@@ -1,7 +1,6 @@
 {
   "name": "legal-skills",
   "displayName": "Legal Skills",
-  "version": "1.0.0",
   "description": "Shared Claude skills for plaintiffs-side litigation and legal practice",
   "author": {
     "name": "Zach Vaughan",
