@@ -1,7 +1,9 @@
 <!-- GOLD-STANDARD EXAMPLE. All parties, witnesses, facts, exhibits, and page/line
 citations below are invented for illustration. This shows the shape, depth, tone, and
 citation style of a full work-product summary. Do not reuse its facts, topics, or wording
-as a template to fill in. -->
+as a template to fill in. Note that identifying facts appear only where the record supplies
+them (e.g., Ex. 2, "Bates not stated on the record"); a fact the record does not supply is
+left as a visible gap, never guessed. -->
 
 Privileged & Confidential - Attorney Work Product
 
